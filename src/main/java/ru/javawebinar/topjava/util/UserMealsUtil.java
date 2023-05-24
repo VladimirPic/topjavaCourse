@@ -28,8 +28,6 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        List<UserMeal> mealList = new ArrayList<>();
-        List<UserMealWithExcess> mealWithExcesses = new ArrayList<>();
         Map<LocalDate, Integer> caloriesMap = new HashMap<>();
 
         for (UserMeal meal : meals) {
@@ -42,22 +40,17 @@ public class UserMealsUtil {
             } else {
                 caloriesMap.put(date, calories);
             }
-
-            if (TimeUtil.isBetweenHalfOpen(LocalTime.from(meal.getDateTime()), startTime, endTime)) {
-                mealList.add(new UserMeal(meal.getDateTime(), meal.getDescription(), meal.getCalories()));
-            }
         }
 
+        List<UserMealWithExcess> mealWithExcesses = new ArrayList<>();
+
         for (Map.Entry<LocalDate, Integer> map : caloriesMap.entrySet()) {
-            for (UserMeal meal : mealList) {
+            for (UserMeal meal : meals) {
                 if (meal.getDateTime().getYear() == (map.getKey().getYear()) &&
                         meal.getDateTime().getMonth() == (map.getKey().getMonth()) &&
-                        meal.getDateTime().getDayOfMonth() == (map.getKey().getDayOfMonth())) {
-                    if (caloriesPerDay < map.getValue()) {
-                        mealWithExcesses.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), true));
-                    } else {
-                        mealWithExcesses.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), false));
-                    }
+                        meal.getDateTime().getDayOfMonth() == (map.getKey().getDayOfMonth()) &&
+                        TimeUtil.isBetweenHalfOpen(LocalTime.from(meal.getDateTime()), startTime, endTime)) {
+                    mealWithExcesses.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), caloriesPerDay < map.getValue()));
                 }
             }
         }
