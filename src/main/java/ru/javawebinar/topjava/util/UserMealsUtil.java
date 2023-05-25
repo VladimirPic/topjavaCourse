@@ -34,24 +34,15 @@ public class UserMealsUtil {
             LocalDate date = meal.getDateTime().toLocalDate();
             int calories = meal.getCalories();
 
-            if (caloriesMap.containsKey(date)) {
-                int totalCalories = caloriesMap.get(date);
-                caloriesMap.put(date, totalCalories + calories);
-            } else {
-                caloriesMap.put(date, calories);
-            }
+            caloriesMap.merge(date, calories, (oldValue, newValue) -> oldValue + newValue);
         }
 
         List<UserMealWithExcess> mealWithExcesses = new ArrayList<>();
 
-        for (Map.Entry<LocalDate, Integer> map : caloriesMap.entrySet()) {
-            for (UserMeal meal : meals) {
-                if (meal.getDateTime().getYear() == (map.getKey().getYear()) &&
-                        meal.getDateTime().getMonth() == (map.getKey().getMonth()) &&
-                        meal.getDateTime().getDayOfMonth() == (map.getKey().getDayOfMonth()) &&
-                        TimeUtil.isBetweenHalfOpen(LocalTime.from(meal.getDateTime()), startTime, endTime)) {
-                    mealWithExcesses.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), caloriesPerDay < map.getValue()));
-                }
+        for (UserMeal meal : meals) {
+            if ((caloriesMap.containsKey(meal.getDateTime().toLocalDate())) &&
+                    TimeUtil.isBetweenHalfOpen(LocalTime.from(meal.getDateTime()), startTime, endTime)) {
+                mealWithExcesses.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), caloriesPerDay < caloriesMap.get(meal.getDateTime().toLocalDate())));
             }
         }
         return mealWithExcesses;
