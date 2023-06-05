@@ -17,12 +17,32 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>mealsServlet</servlet-name>
+        <servlet-name>mealsServletGet</servlet-name>
         <servlet-class>ru.javawebinar.topjava.web.MealServlet</servlet-class>
         <load-on-startup>0</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>mealsServlet</servlet-name>
+        <servlet-name>mealsServletGet</servlet-name>
         <url-pattern>/meals</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>mealsServletCreate</servlet-name>
+        <servlet-class>ru.javawebinar.topjava.web.MealServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>mealsServletCreate</servlet-name>
+        <url-pattern>/create</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>mealsServletEdit</servlet-name>
+        <servlet-class>ru.javawebinar.topjava.web.MealServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>mealsServletEdit</servlet-name>
+        <url-pattern>/edit</url-pattern>
     </servlet-mapping>
 </web-app>
