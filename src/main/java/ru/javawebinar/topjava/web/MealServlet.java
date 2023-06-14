@@ -22,61 +22,56 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
     private MealRepository repository;
+    MealRestController controller;
 
     @Override
     public void init() {
         try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
-            MealRestController controller = appCtx.getBean(MealRestController.class);
+            controller = appCtx.getBean(MealRestController.class);
         }
         repository = new InMemoryMealRepository();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
-            MealRestController controller = appCtx.getBean(MealRestController.class);
-            request.setCharacterEncoding("UTF-8");
-            String id = request.getParameter("id");
+        request.setCharacterEncoding("UTF-8");
+        String id = request.getParameter("id");
 
-            Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                    LocalDateTime.parse(request.getParameter("dateTime")),
-                    request.getParameter("description"),
-                    Integer.parseInt(request.getParameter("calories")));
+        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
+                LocalDateTime.parse(request.getParameter("dateTime")),
+                request.getParameter("description"),
+                Integer.parseInt(request.getParameter("calories")));
 
-            log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-            controller.save(meal);
-            response.sendRedirect("meals");
-        }
+        log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
+        controller.create(meal);
+        response.sendRedirect("meals");
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
-            MealRestController controller = appCtx.getBean(MealRestController.class);
-            String action = request.getParameter("action");
+        String action = request.getParameter("action");
 
-            switch (action == null ? "all" : action) {
-                case "delete":
-                    int id = getId(request);
-                    log.info("Delete id={}", id);
-                    controller.delete(id);
-                    response.sendRedirect("meals");
-                    break;
-                case "create":
-                case "update":
-                    final Meal meal = "create".equals(action) ?
-                            new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
-                            controller.getById(getId(request));
-                    request.setAttribute("meal", meal);
-                    request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
-                    break;
-                case "all":
-                default:
-                    log.info("getAll");
-                    request.setAttribute("meals", controller.getAll());
-                    request.getRequestDispatcher("/meals.jsp").forward(request, response);
-                    break;
-            }
+        switch (action == null ? "all" : action) {
+            case "delete":
+                int id = getId(request);
+                log.info("Delete id={}", id);
+                controller.delete(id);
+                response.sendRedirect("meals");
+                break;
+            case "create":
+            case "update":
+                final Meal meal = "create".equals(action) ?
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
+                        controller.getById(getId(request));
+                request.setAttribute("meal", meal);
+                request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
+                break;
+            case "all":
+            default:
+                log.info("getAll");
+                request.setAttribute("meals", controller.getAll());
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
         }
     }
 

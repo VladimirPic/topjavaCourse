@@ -42,10 +42,6 @@ public class Meal extends AbstractBaseEntity {
         return dateTime.toLocalTime();
     }
 
-    public boolean isNew() {
-        return super.getId() == null;
-    }
-
     @Override
     public String toString() {
         return "Meal{" +
