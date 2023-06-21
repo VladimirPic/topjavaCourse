@@ -24,7 +24,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(int userId, Meal meal) {
-        Map<Integer, Meal> mealMap = repository.computeIfAbsent(meal.getId(), k -> new ConcurrentHashMap<>());
+        Map<Integer, Meal> mealMap = repository.computeIfAbsent(userId, k -> new ConcurrentHashMap<>());
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             mealMap.put(meal.getId(), meal);
@@ -35,11 +35,11 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int userId, int id) {
-        Map<Integer, Meal> map = repository.get(userId);
-        if (map.isEmpty()) {
+        Map<Integer, Meal> userMap = repository.get(userId);
+        if (userMap == null) {
             return false;
         }
-        return map.remove(id) != null;
+        return userMap.remove(id) != null;
     }
 
     @Override
@@ -52,28 +52,19 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
-        return getFiltredValues(userId, null, null, null, null);
+    public List<Meal> getAll(int userId) {
+        return getFiltredValues(userId, LocalDate.MIN, LocalDate.MAX, LocalTime.MIN, LocalTime.MAX);
     }
 
     public List<Meal> getFiltredValues(int userId, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
-        Map<Integer, Meal> map = repository.get(userId);
-        List<Meal> meals = map != null ? map.values()
+        Map<Integer, Meal> userMap = repository.get(userId);
+
+        return userMap != null ? userMap.values()
                 .stream()
+                .filter(mealTo -> DateTimeUtil.isBetweenHalfOpen(mealTo.getDate(), startDate, endDate))
+                .filter(mealTo -> DateTimeUtil.isBetweenHalfOpen(mealTo.getTime(), startTime, endTime))
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList()) : Collections.emptyList();
-
-        return meals.stream().filter(mealTo -> {
-                            LocalDate minDate = startDate != null ? startDate : LocalDate.MIN;
-                            LocalDate maxDate = endDate != null ? endDate : LocalDate.MAX;
-                            return DateTimeUtil.isBetweenHalfOpen(mealTo.getDate(), minDate, maxDate);
-                        })
-                .filter(mealTo -> {
-                            LocalTime minTime = startTime != null ? startTime : LocalTime.MIN;
-                            LocalTime maxTime = endTime != null ? endTime : LocalTime.MAX;
-                            return DateTimeUtil.isBetweenHalfOpen(mealTo.getTime(), minTime, maxTime);
-                        })
-                .collect(Collectors.toList());
     }
 }
 

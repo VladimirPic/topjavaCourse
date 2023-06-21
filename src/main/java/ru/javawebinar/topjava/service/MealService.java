@@ -21,11 +21,11 @@ public class MealService {
     }
 
     public Meal create(int userId, Meal newMeal) {
-        return checkNotFoundWithId(repository.save(userId, newMeal), userId);
+        return repository.save(userId, newMeal);
     }
 
     public void update(int userId, Meal meal) {
-        checkNotFoundWithId(create(userId, meal), meal.getId());
+        repository.save(userId, meal);
     }
 
     public void delete(Integer userId, int id) {
@@ -41,6 +41,8 @@ public class MealService {
     }
 
     public List<Meal> getAllByDateTime(int userId, LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
-        return repository.getFiltredValues(userId, startDate, endDate, startTime, endTime);
+        return repository.getFiltredValues(userId,
+                startDate == null ? LocalDate.MIN : startDate, endDate == null ? LocalDate.MAX : endDate,
+                startTime == null ? LocalTime.MIN : startTime, endTime == null ? LocalTime.MAX : endTime);
     }
 }

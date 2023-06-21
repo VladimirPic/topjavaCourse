@@ -5,8 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -14,22 +13,27 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
-    private MealRepository repository;
-    MealRestController controller;
+    private MealRestController controller;
 
     @Override
     public void init() {
         try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
             controller = appCtx.getBean(MealRestController.class);
         }
-        repository = new InMemoryMealRepository();
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
     }
 
     @Override
@@ -43,7 +47,11 @@ public class MealServlet extends HttpServlet {
                 Integer.parseInt(request.getParameter("calories")));
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        controller.create(meal);
+        if (meal.isNew()) {
+            controller.create(meal);
+        } else {
+            controller.update(meal.getId(), meal);
+        }
         response.sendRedirect("meals");
     }
 
@@ -65,6 +73,15 @@ public class MealServlet extends HttpServlet {
                         controller.getById(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
+                break;
+            case "filter" :
+                log.info("getAllByFilter");
+                request.setAttribute("meals", controller.getAllByDateTime(
+                        DateTimeUtil.parseLocalDate(request.getParameter("startDate")),
+                        DateTimeUtil.parseLocalDate(request.getParameter("endDate")),
+                        DateTimeUtil.parseLocalTime(request.getParameter("startTime")),
+                        DateTimeUtil.parseLocalTime(request.getParameter("endTime"))));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":
             default:
