@@ -22,4 +22,7 @@
     <bean id="namedJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
         <constructor-arg ref="jdbcTemplate"/>
     </bean>
+    <bean class="ru.javawebinar.topjava.model.Meal" id="meal">
+        <constructor-arg ref="jdbcTemplate"/>
+    </bean>
 </beans>
