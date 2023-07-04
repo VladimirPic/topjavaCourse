@@ -1,4 +1,4 @@
-package ru.javawebinar.topjava.web.user.service;
+package ru.javawebinar.topjava.service;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

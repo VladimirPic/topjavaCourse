@@ -26,10 +26,6 @@ public class Meal extends AbstractBaseEntity {
 
     public Meal() {}
 
-    public Meal(JdbcTemplate jdbcTemplate) {
-
-    }
-
     public void setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
     }
