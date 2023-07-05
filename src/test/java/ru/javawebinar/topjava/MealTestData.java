@@ -47,21 +47,13 @@ public class MealTestData {
             LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак ADMIN",
             500);
 
-    public static final Meal adminMeal_2 = new Meal(100011,
-            LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед ADMIN",
-            1000);
-
-    public static final Meal adminMeal_3 = new Meal(100012,
-            LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин ADMIN",
-            500);
-
     public static Meal getNew() {
         return new Meal(LocalDateTime.of(2021, Month.JANUARY, 25, 20, 0), "Ужин ADMIN",
                 120);
     }
 
     public static Meal getUpdated() {
-        Meal updated = userMeal_1;
+        Meal updated = new Meal(userMeal_1.getId(), userMeal_1.getDateTime(), userMeal_1.getDescription(), userMeal_1.getCalories());
         updated.setDateTime(LocalDateTime.of(2020, Month.JANUARY, 30, 16, 0));
         updated.setDescription("Полдник USER");
         updated.setCalories(100);
