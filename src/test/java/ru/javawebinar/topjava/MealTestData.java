@@ -13,37 +13,36 @@ public class MealTestData {
 
     public static final int USER_ID = START_SEQ;
     public static final int ADMIN_ID = START_SEQ + 1;
-    public static final int NOT_FOUND = 10;
 
-    public static final Meal userMeal_1 = new Meal(100003,
+    public static final Meal userMeal_1 = new Meal(START_SEQ + 3,
             LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак USER",
             500);
 
-    public static final Meal userMeal_2 = new Meal(100004,
+    public static final Meal userMeal_2 = new Meal(START_SEQ + 4,
             LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед USER",
             1000);
 
-    public static final Meal userMeal_3 = new Meal(100005,
+    public static final Meal userMeal_3 = new Meal(START_SEQ + 5,
             LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин USER",
             500);
 
-    public static final Meal userMeal_4 = new Meal(100006,
+    public static final Meal userMeal_4 = new Meal(START_SEQ + 6,
             LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение USER",
             100);
 
-    public static final Meal userMeal_5 = new Meal(100007,
+    public static final Meal userMeal_5 = new Meal(START_SEQ + 7,
             LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак USER",
             1000);
 
-    public static final Meal userMeal_6 = new Meal(100008,
+    public static final Meal userMeal_6 = new Meal(START_SEQ + 8,
             LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед USER",
             500);
 
-    public static final Meal userMeal_7 = new Meal(100009,
+    public static final Meal userMeal_7 = new Meal(START_SEQ + 9,
             LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин USER",
             410);
 
-    public static final Meal adminMeal_1 = new Meal(100010,
+    public static final Meal adminMeal_1 = new Meal(START_SEQ + 10,
             LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак ADMIN",
             500);
 
@@ -69,6 +68,6 @@ public class MealTestData {
     }
 
     public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).usingRecursiveFieldByFieldElementComparator().isEqualTo(expected);
     }
 }
